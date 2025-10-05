@@ -1,0 +1,1989 @@
+{
+  "C:\\Users\\donnc\\Folkuni\\shui-board\\backend\\serverless.yml": {
+    "versionFramework": "4.20.2",
+    "servicePath": "C:\\Users\\donnc\\Folkuni\\shui-board\\backend\\serverless.yml",
+    "serviceConfigFileName": "serverless.yml",
+    "service": {
+      "service": "shui-board",
+      "frameworkVersion": "4",
+      "provider": {
+        "name": "aws",
+        "runtime": "nodejs20.x",
+        "region": "eu-north-1",
+        "environment": {
+          "TABLE_NAME": "shui-board-messages-prod"
+        },
+        "httpApi": {
+          "cors": {
+            "allowedOrigins": [
+              "*"
+            ],
+            "allowedHeaders": [
+              "Content-Type"
+            ],
+            "allowedMethods": [
+              "OPTIONS",
+              "GET",
+              "POST",
+              "PUT"
+            ]
+          }
+        },
+        "iam": {
+          "role": {
+            "statements": [
+              {
+                "Effect": "Allow",
+                "Action": [
+                  "dynamodb:PutItem",
+                  "dynamodb:GetItem",
+                  "dynamodb:UpdateItem",
+                  "dynamodb:Scan"
+                ],
+                "Resource": "arn:aws:dynamodb:eu-north-1:365535501605:table/shui-board-messages-prod"
+              }
+            ]
+          }
+        },
+        "stage": "prod",
+        "versionFunctions": true,
+        "compiledCloudFormationTemplate": {
+          "AWSTemplateFormatVersion": "2010-09-09",
+          "Description": "The AWS CloudFormation template for this Serverless application",
+          "Resources": {
+            "CreateMessageLogGroup": {
+              "Type": "AWS::Logs::LogGroup",
+              "Properties": {
+                "LogGroupName": "/aws/lambda/shui-board-prod-createMessage"
+              }
+            },
+            "ListMessagesLogGroup": {
+              "Type": "AWS::Logs::LogGroup",
+              "Properties": {
+                "LogGroupName": "/aws/lambda/shui-board-prod-listMessages"
+              }
+            },
+            "UpdateMessageLogGroup": {
+              "Type": "AWS::Logs::LogGroup",
+              "Properties": {
+                "LogGroupName": "/aws/lambda/shui-board-prod-updateMessage"
+              }
+            },
+            "IamRoleLambdaExecution": {
+              "Type": "AWS::IAM::Role",
+              "Properties": {
+                "AssumeRolePolicyDocument": {
+                  "Version": "2012-10-17",
+                  "Statement": [
+                    {
+                      "Effect": "Allow",
+                      "Principal": {
+                        "Service": [
+                          "lambda.amazonaws.com"
+                        ]
+                      },
+                      "Action": [
+                        "sts:AssumeRole"
+                      ]
+                    }
+                  ]
+                },
+                "Policies": [
+                  {
+                    "PolicyName": {
+                      "Fn::Join": [
+                        "-",
+                        [
+                          "shui-board",
+                          "prod",
+                          "lambda"
+                        ]
+                      ]
+                    },
+                    "PolicyDocument": {
+                      "Version": "2012-10-17",
+                      "Statement": [
+                        {
+                          "Effect": "Allow",
+                          "Action": [
+                            "logs:CreateLogStream",
+                            "logs:CreateLogGroup",
+                            "logs:TagResource"
+                          ],
+                          "Resource": [
+                            {
+                              "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/shui-board-prod*:*"
+                            }
+                          ]
+                        },
+                        {
+                          "Effect": "Allow",
+                          "Action": [
+                            "logs:PutLogEvents"
+                          ],
+                          "Resource": [
+                            {
+                              "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/shui-board-prod*:*:*"
+                            }
+                          ]
+                        },
+                        {
+                          "Effect": "Allow",
+                          "Action": [
+                            "dynamodb:PutItem",
+                            "dynamodb:GetItem",
+                            "dynamodb:UpdateItem",
+                            "dynamodb:Scan"
+                          ],
+                          "Resource": "arn:aws:dynamodb:eu-north-1:365535501605:table/shui-board-messages-prod"
+                        }
+                      ]
+                    }
+                  }
+                ],
+                "Path": "/",
+                "RoleName": {
+                  "Fn::Join": [
+                    "-",
+                    [
+                      "shui-board",
+                      "prod",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      "lambdaRole"
+                    ]
+                  ]
+                }
+              }
+            },
+            "CreateMessageLambdaFunction": {
+              "Type": "AWS::Lambda::Function",
+              "Properties": {
+                "Code": {
+                  "S3Bucket": "serverless-framework-deployments-eu-north-1-e110e666-da56",
+                  "S3Key": "serverless/shui-board/prod/1759692591083-2025-10-05T19:29:51.083Z/shui-board.zip"
+                },
+                "Handler": "src/createMessage.handler",
+                "Runtime": "nodejs20.x",
+                "FunctionName": "shui-board-prod-createMessage",
+                "MemorySize": 1024,
+                "Timeout": 6,
+                "Environment": {
+                  "Variables": {
+                    "TABLE_NAME": "shui-board-messages-prod"
+                  }
+                },
+                "Role": {
+                  "Fn::GetAtt": [
+                    "IamRoleLambdaExecution",
+                    "Arn"
+                  ]
+                }
+              },
+              "DependsOn": [
+                "CreateMessageLogGroup"
+              ]
+            },
+            "ListMessagesLambdaFunction": {
+              "Type": "AWS::Lambda::Function",
+              "Properties": {
+                "Code": {
+                  "S3Bucket": "serverless-framework-deployments-eu-north-1-e110e666-da56",
+                  "S3Key": "serverless/shui-board/prod/1759692591083-2025-10-05T19:29:51.083Z/shui-board.zip"
+                },
+                "Handler": "src/listMessages.handler",
+                "Runtime": "nodejs20.x",
+                "FunctionName": "shui-board-prod-listMessages",
+                "MemorySize": 1024,
+                "Timeout": 6,
+                "Environment": {
+                  "Variables": {
+                    "TABLE_NAME": "shui-board-messages-prod"
+                  }
+                },
+                "Role": {
+                  "Fn::GetAtt": [
+                    "IamRoleLambdaExecution",
+                    "Arn"
+                  ]
+                }
+              },
+              "DependsOn": [
+                "ListMessagesLogGroup"
+              ]
+            },
+            "UpdateMessageLambdaFunction": {
+              "Type": "AWS::Lambda::Function",
+              "Properties": {
+                "Code": {
+                  "S3Bucket": "serverless-framework-deployments-eu-north-1-e110e666-da56",
+                  "S3Key": "serverless/shui-board/prod/1759692591083-2025-10-05T19:29:51.083Z/shui-board.zip"
+                },
+                "Handler": "src/updateMessage.handler",
+                "Runtime": "nodejs20.x",
+                "FunctionName": "shui-board-prod-updateMessage",
+                "MemorySize": 1024,
+                "Timeout": 6,
+                "Environment": {
+                  "Variables": {
+                    "TABLE_NAME": "shui-board-messages-prod"
+                  }
+                },
+                "Role": {
+                  "Fn::GetAtt": [
+                    "IamRoleLambdaExecution",
+                    "Arn"
+                  ]
+                }
+              },
+              "DependsOn": [
+                "UpdateMessageLogGroup"
+              ]
+            },
+            "CreateMessageLambdaVersionlwROWSaSIgeMkTU7lkBsiKtvQQheJQOHkd2BOtK84": {
+              "Type": "AWS::Lambda::Version",
+              "DeletionPolicy": "Retain",
+              "Properties": {
+                "FunctionName": {
+                  "Ref": "CreateMessageLambdaFunction"
+                },
+                "CodeSha256": "mVYVNN+hqHe4CfX484xQRo/dmPmX+EquMJRd/JeSxPA="
+              }
+            },
+            "ListMessagesLambdaVersiontFJljo6iHEfA5KfEvoHmdIZO74essW9ebqk9XMLlBA": {
+              "Type": "AWS::Lambda::Version",
+              "DeletionPolicy": "Retain",
+              "Properties": {
+                "FunctionName": {
+                  "Ref": "ListMessagesLambdaFunction"
+                },
+                "CodeSha256": "mVYVNN+hqHe4CfX484xQRo/dmPmX+EquMJRd/JeSxPA="
+              }
+            },
+            "UpdateMessageLambdaVersionfY22LkQ4Nei2lGFWMzTh0Qqr3hLeeZtkFiQmpPkvTmw": {
+              "Type": "AWS::Lambda::Version",
+              "DeletionPolicy": "Retain",
+              "Properties": {
+                "FunctionName": {
+                  "Ref": "UpdateMessageLambdaFunction"
+                },
+                "CodeSha256": "mVYVNN+hqHe4CfX484xQRo/dmPmX+EquMJRd/JeSxPA="
+              }
+            },
+            "HttpApi": {
+              "Type": "AWS::ApiGatewayV2::Api",
+              "Properties": {
+                "Name": "prod-shui-board",
+                "ProtocolType": "HTTP",
+                "CorsConfiguration": {
+                  "AllowCredentials": "<REDACTED>",
+                  "AllowHeaders": [
+                    "Content-Type"
+                  ],
+                  "AllowMethods": [
+                    "OPTIONS",
+                    "GET",
+                    "POST",
+                    "PUT"
+                  ],
+                  "AllowOrigins": [
+                    "*"
+                  ]
+                }
+              }
+            },
+            "HttpApiStage": {
+              "Type": "AWS::ApiGatewayV2::Stage",
+              "Properties": {
+                "ApiId": {
+                  "Ref": "HttpApi"
+                },
+                "StageName": "$default",
+                "AutoDeploy": true,
+                "DefaultRouteSettings": {
+                  "DetailedMetricsEnabled": false
+                }
+              }
+            },
+            "CreateMessageLambdaPermissionHttpApi": {
+              "Type": "AWS::Lambda::Permission",
+              "Properties": {
+                "FunctionName": {
+                  "Fn::GetAtt": [
+                    "CreateMessageLambdaFunction",
+                    "Arn"
+                  ]
+                },
+                "Action": "lambda:InvokeFunction",
+                "Principal": "apigateway.amazonaws.com",
+                "SourceArn": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":execute-api:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":",
+                      {
+                        "Ref": "HttpApi"
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              }
+            },
+            "HttpApiIntegrationCreateMessage": {
+              "Type": "AWS::ApiGatewayV2::Integration",
+              "Properties": {
+                "ApiId": {
+                  "Ref": "HttpApi"
+                },
+                "IntegrationType": "AWS_PROXY",
+                "IntegrationUri": {
+                  "Fn::GetAtt": [
+                    "CreateMessageLambdaFunction",
+                    "Arn"
+                  ]
+                },
+                "PayloadFormatVersion": "2.0",
+                "TimeoutInMillis": 30000
+              }
+            },
+            "HttpApiRoutePostMessages": {
+              "Type": "AWS::ApiGatewayV2::Route",
+              "Properties": {
+                "ApiId": {
+                  "Ref": "HttpApi"
+                },
+                "RouteKey": "POST /messages",
+                "Target": {
+                  "Fn::Join": [
+                    "/",
+                    [
+                      "integrations",
+                      {
+                        "Ref": "HttpApiIntegrationCreateMessage"
+                      }
+                    ]
+                  ]
+                }
+              },
+              "DependsOn": "HttpApiIntegrationCreateMessage"
+            },
+            "ListMessagesLambdaPermissionHttpApi": {
+              "Type": "AWS::Lambda::Permission",
+              "Properties": {
+                "FunctionName": {
+                  "Fn::GetAtt": [
+                    "ListMessagesLambdaFunction",
+                    "Arn"
+                  ]
+                },
+                "Action": "lambda:InvokeFunction",
+                "Principal": "apigateway.amazonaws.com",
+                "SourceArn": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":execute-api:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":",
+                      {
+                        "Ref": "HttpApi"
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              }
+            },
+            "HttpApiIntegrationListMessages": {
+              "Type": "AWS::ApiGatewayV2::Integration",
+              "Properties": {
+                "ApiId": {
+                  "Ref": "HttpApi"
+                },
+                "IntegrationType": "AWS_PROXY",
+                "IntegrationUri": {
+                  "Fn::GetAtt": [
+                    "ListMessagesLambdaFunction",
+                    "Arn"
+                  ]
+                },
+                "PayloadFormatVersion": "2.0",
+                "TimeoutInMillis": 30000
+              }
+            },
+            "HttpApiRouteGetMessages": {
+              "Type": "AWS::ApiGatewayV2::Route",
+              "Properties": {
+                "ApiId": {
+                  "Ref": "HttpApi"
+                },
+                "RouteKey": "GET /messages",
+                "Target": {
+                  "Fn::Join": [
+                    "/",
+                    [
+                      "integrations",
+                      {
+                        "Ref": "HttpApiIntegrationListMessages"
+                      }
+                    ]
+                  ]
+                }
+              },
+              "DependsOn": "HttpApiIntegrationListMessages"
+            },
+            "UpdateMessageLambdaPermissionHttpApi": {
+              "Type": "AWS::Lambda::Permission",
+              "Properties": {
+                "FunctionName": {
+                  "Fn::GetAtt": [
+                    "UpdateMessageLambdaFunction",
+                    "Arn"
+                  ]
+                },
+                "Action": "lambda:InvokeFunction",
+                "Principal": "apigateway.amazonaws.com",
+                "SourceArn": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      {
+                        "Ref": "AWS::Partition"
+                      },
+                      ":execute-api:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":",
+                      {
+                        "Ref": "HttpApi"
+                      },
+                      "/*"
+                    ]
+                  ]
+                }
+              }
+            },
+            "HttpApiIntegrationUpdateMessage": {
+              "Type": "AWS::ApiGatewayV2::Integration",
+              "Properties": {
+                "ApiId": {
+                  "Ref": "HttpApi"
+                },
+                "IntegrationType": "AWS_PROXY",
+                "IntegrationUri": {
+                  "Fn::GetAtt": [
+                    "UpdateMessageLambdaFunction",
+                    "Arn"
+                  ]
+                },
+                "PayloadFormatVersion": "2.0",
+                "TimeoutInMillis": 30000
+              }
+            },
+            "HttpApiRoutePutMessagesIdVar": {
+              "Type": "AWS::ApiGatewayV2::Route",
+              "Properties": {
+                "ApiId": {
+                  "Ref": "HttpApi"
+                },
+                "RouteKey": "PUT /messages/{id}",
+                "Target": {
+                  "Fn::Join": [
+                    "/",
+                    [
+                      "integrations",
+                      {
+                        "Ref": "HttpApiIntegrationUpdateMessage"
+                      }
+                    ]
+                  ]
+                }
+              },
+              "DependsOn": "HttpApiIntegrationUpdateMessage"
+            },
+            "MessagesTable": {
+              "Type": "AWS::DynamoDB::Table",
+              "Properties": {
+                "TableName": "shui-board-messages-prod",
+                "BillingMode": "PAY_PER_REQUEST",
+                "AttributeDefinitions": [
+                  {
+                    "AttributeName": "id",
+                    "AttributeType": "S"
+                  }
+                ],
+                "KeySchema": [
+                  {
+                    "AttributeName": "id",
+                    "KeyType": "HASH"
+                  }
+                ]
+              }
+            }
+          },
+          "Outputs": {
+            "ServerlessDeploymentBucketName": {
+              "Value": "serverless-framework-deployments-eu-north-1-e110e666-da56",
+              "Export": {
+                "Name": "sls-shui-board-prod-ServerlessDeploymentBucketName"
+              }
+            },
+            "CreateMessageLambdaFunctionQualifiedArn": {
+              "Description": "Current Lambda function version",
+              "Value": {
+                "Ref": "CreateMessageLambdaVersionlwROWSaSIgeMkTU7lkBsiKtvQQheJQOHkd2BOtK84"
+              },
+              "Export": {
+                "Name": "sls-shui-board-prod-CreateMessageLambdaFunctionQualifiedArn"
+              }
+            },
+            "ListMessagesLambdaFunctionQualifiedArn": {
+              "Description": "Current Lambda function version",
+              "Value": {
+                "Ref": "ListMessagesLambdaVersiontFJljo6iHEfA5KfEvoHmdIZO74essW9ebqk9XMLlBA"
+              },
+              "Export": {
+                "Name": "sls-shui-board-prod-ListMessagesLambdaFunctionQualifiedArn"
+              }
+            },
+            "UpdateMessageLambdaFunctionQualifiedArn": {
+              "Description": "Current Lambda function version",
+              "Value": {
+                "Ref": "UpdateMessageLambdaVersionfY22LkQ4Nei2lGFWMzTh0Qqr3hLeeZtkFiQmpPkvTmw"
+              },
+              "Export": {
+                "Name": "sls-shui-board-prod-UpdateMessageLambdaFunctionQualifiedArn"
+              }
+            },
+            "HttpApiId": {
+              "Description": "Id of the HTTP API",
+              "Value": {
+                "Ref": "HttpApi"
+              },
+              "Export": {
+                "Name": "sls-shui-board-prod-HttpApiId"
+              }
+            },
+            "HttpApiUrl": {
+              "Description": "URL of the HTTP API",
+              "Value": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "https://",
+                    {
+                      "Ref": "HttpApi"
+                    },
+                    ".execute-api.",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ".",
+                    {
+                      "Ref": "AWS::URLSuffix"
+                    }
+                  ]
+                ]
+              },
+              "Export": {
+                "Name": "sls-shui-board-prod-HttpApiUrl"
+              }
+            }
+          }
+        },
+        "vpc": {}
+      },
+      "functions": {
+        "createMessage": {
+          "handler": "src/createMessage.handler",
+          "events": [
+            {
+              "httpApi": {
+                "path": "/messages",
+                "method": "post",
+                "cors": {
+                  "allowedOrigins": [
+                    "*"
+                  ],
+                  "allowedHeaders": [
+                    "Content-Type"
+                  ],
+                  "allowedMethods": [
+                    "OPTIONS",
+                    "GET",
+                    "POST",
+                    "PUT"
+                  ]
+                }
+              },
+              "resolvedMethod": "POST",
+              "resolvedPath": "/messages"
+            }
+          ],
+          "name": "shui-board-prod-createMessage",
+          "package": {},
+          "memory": 1024,
+          "timeout": 6,
+          "runtime": "nodejs20.x",
+          "vpc": {},
+          "versionLogicalId": "CreateMessageLambdaVersionlwROWSaSIgeMkTU7lkBsiKtvQQheJQOHkd2BOtK84"
+        },
+        "listMessages": {
+          "handler": "src/listMessages.handler",
+          "events": [
+            {
+              "httpApi": {
+                "path": "/messages",
+                "method": "get",
+                "cors": {
+                  "allowedOrigins": [
+                    "*"
+                  ],
+                  "allowedHeaders": [
+                    "Content-Type"
+                  ],
+                  "allowedMethods": [
+                    "OPTIONS",
+                    "GET",
+                    "POST",
+                    "PUT"
+                  ]
+                }
+              },
+              "resolvedMethod": "GET",
+              "resolvedPath": "/messages"
+            }
+          ],
+          "name": "shui-board-prod-listMessages",
+          "package": {},
+          "memory": 1024,
+          "timeout": 6,
+          "runtime": "nodejs20.x",
+          "vpc": {},
+          "versionLogicalId": "ListMessagesLambdaVersiontFJljo6iHEfA5KfEvoHmdIZO74essW9ebqk9XMLlBA"
+        },
+        "updateMessage": {
+          "handler": "src/updateMessage.handler",
+          "events": [
+            {
+              "httpApi": {
+                "path": "/messages/{id}",
+                "method": "put"
+              },
+              "resolvedMethod": "PUT",
+              "resolvedPath": "/messages/{id}"
+            }
+          ],
+          "name": "shui-board-prod-updateMessage",
+          "package": {},
+          "memory": 1024,
+          "timeout": 6,
+          "runtime": "nodejs20.x",
+          "vpc": {},
+          "versionLogicalId": "UpdateMessageLambdaVersionfY22LkQ4Nei2lGFWMzTh0Qqr3hLeeZtkFiQmpPkvTmw"
+        }
+      },
+      "resources": {
+        "Resources": {
+          "MessagesTable": {
+            "Type": "AWS::DynamoDB::Table",
+            "Properties": {
+              "TableName": "shui-board-messages-prod",
+              "BillingMode": "PAY_PER_REQUEST",
+              "AttributeDefinitions": [
+                {
+                  "AttributeName": "id",
+                  "AttributeType": "S"
+                }
+              ],
+              "KeySchema": [
+                {
+                  "AttributeName": "id",
+                  "KeyType": "HASH"
+                }
+              ]
+            }
+          }
+        },
+        "Outputs": {}
+      }
+    },
+    "provider": {
+      "name": "aws",
+      "runtime": "nodejs20.x",
+      "region": "eu-north-1",
+      "environment": {
+        "TABLE_NAME": "shui-board-messages-prod"
+      },
+      "httpApi": {
+        "cors": {
+          "allowedOrigins": [
+            "*"
+          ],
+          "allowedHeaders": [
+            "Content-Type"
+          ],
+          "allowedMethods": [
+            "OPTIONS",
+            "GET",
+            "POST",
+            "PUT"
+          ]
+        }
+      },
+      "iam": {
+        "role": {
+          "statements": [
+            {
+              "Effect": "Allow",
+              "Action": [
+                "dynamodb:PutItem",
+                "dynamodb:GetItem",
+                "dynamodb:UpdateItem",
+                "dynamodb:Scan"
+              ],
+              "Resource": "arn:aws:dynamodb:eu-north-1:365535501605:table/shui-board-messages-prod"
+            }
+          ]
+        }
+      },
+      "stage": "prod",
+      "versionFunctions": true,
+      "compiledCloudFormationTemplate": {
+        "AWSTemplateFormatVersion": "2010-09-09",
+        "Description": "The AWS CloudFormation template for this Serverless application",
+        "Resources": {
+          "CreateMessageLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/shui-board-prod-createMessage"
+            }
+          },
+          "ListMessagesLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/shui-board-prod-listMessages"
+            }
+          },
+          "UpdateMessageLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/shui-board-prod-updateMessage"
+            }
+          },
+          "IamRoleLambdaExecution": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+              "AssumeRolePolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Principal": {
+                      "Service": [
+                        "lambda.amazonaws.com"
+                      ]
+                    },
+                    "Action": [
+                      "sts:AssumeRole"
+                    ]
+                  }
+                ]
+              },
+              "Policies": [
+                {
+                  "PolicyName": {
+                    "Fn::Join": [
+                      "-",
+                      [
+                        "shui-board",
+                        "prod",
+                        "lambda"
+                      ]
+                    ]
+                  },
+                  "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "logs:CreateLogStream",
+                          "logs:CreateLogGroup",
+                          "logs:TagResource"
+                        ],
+                        "Resource": [
+                          {
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/shui-board-prod*:*"
+                          }
+                        ]
+                      },
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "logs:PutLogEvents"
+                        ],
+                        "Resource": [
+                          {
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/shui-board-prod*:*:*"
+                          }
+                        ]
+                      },
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "dynamodb:PutItem",
+                          "dynamodb:GetItem",
+                          "dynamodb:UpdateItem",
+                          "dynamodb:Scan"
+                        ],
+                        "Resource": "arn:aws:dynamodb:eu-north-1:365535501605:table/shui-board-messages-prod"
+                      }
+                    ]
+                  }
+                }
+              ],
+              "Path": "/",
+              "RoleName": {
+                "Fn::Join": [
+                  "-",
+                  [
+                    "shui-board",
+                    "prod",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    "lambdaRole"
+                  ]
+                ]
+              }
+            }
+          },
+          "CreateMessageLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "serverless-framework-deployments-eu-north-1-e110e666-da56",
+                "S3Key": "serverless/shui-board/prod/1759692591083-2025-10-05T19:29:51.083Z/shui-board.zip"
+              },
+              "Handler": "src/createMessage.handler",
+              "Runtime": "nodejs20.x",
+              "FunctionName": "shui-board-prod-createMessage",
+              "MemorySize": 1024,
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "TABLE_NAME": "shui-board-messages-prod"
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              }
+            },
+            "DependsOn": [
+              "CreateMessageLogGroup"
+            ]
+          },
+          "ListMessagesLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "serverless-framework-deployments-eu-north-1-e110e666-da56",
+                "S3Key": "serverless/shui-board/prod/1759692591083-2025-10-05T19:29:51.083Z/shui-board.zip"
+              },
+              "Handler": "src/listMessages.handler",
+              "Runtime": "nodejs20.x",
+              "FunctionName": "shui-board-prod-listMessages",
+              "MemorySize": 1024,
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "TABLE_NAME": "shui-board-messages-prod"
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              }
+            },
+            "DependsOn": [
+              "ListMessagesLogGroup"
+            ]
+          },
+          "UpdateMessageLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "serverless-framework-deployments-eu-north-1-e110e666-da56",
+                "S3Key": "serverless/shui-board/prod/1759692591083-2025-10-05T19:29:51.083Z/shui-board.zip"
+              },
+              "Handler": "src/updateMessage.handler",
+              "Runtime": "nodejs20.x",
+              "FunctionName": "shui-board-prod-updateMessage",
+              "MemorySize": 1024,
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "TABLE_NAME": "shui-board-messages-prod"
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              }
+            },
+            "DependsOn": [
+              "UpdateMessageLogGroup"
+            ]
+          },
+          "CreateMessageLambdaVersionlwROWSaSIgeMkTU7lkBsiKtvQQheJQOHkd2BOtK84": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "CreateMessageLambdaFunction"
+              },
+              "CodeSha256": "mVYVNN+hqHe4CfX484xQRo/dmPmX+EquMJRd/JeSxPA="
+            }
+          },
+          "ListMessagesLambdaVersiontFJljo6iHEfA5KfEvoHmdIZO74essW9ebqk9XMLlBA": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "ListMessagesLambdaFunction"
+              },
+              "CodeSha256": "mVYVNN+hqHe4CfX484xQRo/dmPmX+EquMJRd/JeSxPA="
+            }
+          },
+          "UpdateMessageLambdaVersionfY22LkQ4Nei2lGFWMzTh0Qqr3hLeeZtkFiQmpPkvTmw": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "UpdateMessageLambdaFunction"
+              },
+              "CodeSha256": "mVYVNN+hqHe4CfX484xQRo/dmPmX+EquMJRd/JeSxPA="
+            }
+          },
+          "HttpApi": {
+            "Type": "AWS::ApiGatewayV2::Api",
+            "Properties": {
+              "Name": "prod-shui-board",
+              "ProtocolType": "HTTP",
+              "CorsConfiguration": {
+                "AllowCredentials": "<REDACTED>",
+                "AllowHeaders": [
+                  "Content-Type"
+                ],
+                "AllowMethods": [
+                  "OPTIONS",
+                  "GET",
+                  "POST",
+                  "PUT"
+                ],
+                "AllowOrigins": [
+                  "*"
+                ]
+              }
+            }
+          },
+          "HttpApiStage": {
+            "Type": "AWS::ApiGatewayV2::Stage",
+            "Properties": {
+              "ApiId": {
+                "Ref": "HttpApi"
+              },
+              "StageName": "$default",
+              "AutoDeploy": true,
+              "DefaultRouteSettings": {
+                "DetailedMetricsEnabled": false
+              }
+            }
+          },
+          "CreateMessageLambdaPermissionHttpApi": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "CreateMessageLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "HttpApi"
+                    },
+                    "/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "HttpApiIntegrationCreateMessage": {
+            "Type": "AWS::ApiGatewayV2::Integration",
+            "Properties": {
+              "ApiId": {
+                "Ref": "HttpApi"
+              },
+              "IntegrationType": "AWS_PROXY",
+              "IntegrationUri": {
+                "Fn::GetAtt": [
+                  "CreateMessageLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "PayloadFormatVersion": "2.0",
+              "TimeoutInMillis": 30000
+            }
+          },
+          "HttpApiRoutePostMessages": {
+            "Type": "AWS::ApiGatewayV2::Route",
+            "Properties": {
+              "ApiId": {
+                "Ref": "HttpApi"
+              },
+              "RouteKey": "POST /messages",
+              "Target": {
+                "Fn::Join": [
+                  "/",
+                  [
+                    "integrations",
+                    {
+                      "Ref": "HttpApiIntegrationCreateMessage"
+                    }
+                  ]
+                ]
+              }
+            },
+            "DependsOn": "HttpApiIntegrationCreateMessage"
+          },
+          "ListMessagesLambdaPermissionHttpApi": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "ListMessagesLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "HttpApi"
+                    },
+                    "/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "HttpApiIntegrationListMessages": {
+            "Type": "AWS::ApiGatewayV2::Integration",
+            "Properties": {
+              "ApiId": {
+                "Ref": "HttpApi"
+              },
+              "IntegrationType": "AWS_PROXY",
+              "IntegrationUri": {
+                "Fn::GetAtt": [
+                  "ListMessagesLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "PayloadFormatVersion": "2.0",
+              "TimeoutInMillis": 30000
+            }
+          },
+          "HttpApiRouteGetMessages": {
+            "Type": "AWS::ApiGatewayV2::Route",
+            "Properties": {
+              "ApiId": {
+                "Ref": "HttpApi"
+              },
+              "RouteKey": "GET /messages",
+              "Target": {
+                "Fn::Join": [
+                  "/",
+                  [
+                    "integrations",
+                    {
+                      "Ref": "HttpApiIntegrationListMessages"
+                    }
+                  ]
+                ]
+              }
+            },
+            "DependsOn": "HttpApiIntegrationListMessages"
+          },
+          "UpdateMessageLambdaPermissionHttpApi": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "UpdateMessageLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:",
+                    {
+                      "Ref": "AWS::Partition"
+                    },
+                    ":execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "HttpApi"
+                    },
+                    "/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "HttpApiIntegrationUpdateMessage": {
+            "Type": "AWS::ApiGatewayV2::Integration",
+            "Properties": {
+              "ApiId": {
+                "Ref": "HttpApi"
+              },
+              "IntegrationType": "AWS_PROXY",
+              "IntegrationUri": {
+                "Fn::GetAtt": [
+                  "UpdateMessageLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "PayloadFormatVersion": "2.0",
+              "TimeoutInMillis": 30000
+            }
+          },
+          "HttpApiRoutePutMessagesIdVar": {
+            "Type": "AWS::ApiGatewayV2::Route",
+            "Properties": {
+              "ApiId": {
+                "Ref": "HttpApi"
+              },
+              "RouteKey": "PUT /messages/{id}",
+              "Target": {
+                "Fn::Join": [
+                  "/",
+                  [
+                    "integrations",
+                    {
+                      "Ref": "HttpApiIntegrationUpdateMessage"
+                    }
+                  ]
+                ]
+              }
+            },
+            "DependsOn": "HttpApiIntegrationUpdateMessage"
+          },
+          "MessagesTable": {
+            "Type": "AWS::DynamoDB::Table",
+            "Properties": {
+              "TableName": "shui-board-messages-prod",
+              "BillingMode": "PAY_PER_REQUEST",
+              "AttributeDefinitions": [
+                {
+                  "AttributeName": "id",
+                  "AttributeType": "S"
+                }
+              ],
+              "KeySchema": [
+                {
+                  "AttributeName": "id",
+                  "KeyType": "HASH"
+                }
+              ]
+            }
+          }
+        },
+        "Outputs": {
+          "ServerlessDeploymentBucketName": {
+            "Value": "serverless-framework-deployments-eu-north-1-e110e666-da56",
+            "Export": {
+              "Name": "sls-shui-board-prod-ServerlessDeploymentBucketName"
+            }
+          },
+          "CreateMessageLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "CreateMessageLambdaVersionlwROWSaSIgeMkTU7lkBsiKtvQQheJQOHkd2BOtK84"
+            },
+            "Export": {
+              "Name": "sls-shui-board-prod-CreateMessageLambdaFunctionQualifiedArn"
+            }
+          },
+          "ListMessagesLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "ListMessagesLambdaVersiontFJljo6iHEfA5KfEvoHmdIZO74essW9ebqk9XMLlBA"
+            },
+            "Export": {
+              "Name": "sls-shui-board-prod-ListMessagesLambdaFunctionQualifiedArn"
+            }
+          },
+          "UpdateMessageLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "UpdateMessageLambdaVersionfY22LkQ4Nei2lGFWMzTh0Qqr3hLeeZtkFiQmpPkvTmw"
+            },
+            "Export": {
+              "Name": "sls-shui-board-prod-UpdateMessageLambdaFunctionQualifiedArn"
+            }
+          },
+          "HttpApiId": {
+            "Description": "Id of the HTTP API",
+            "Value": {
+              "Ref": "HttpApi"
+            },
+            "Export": {
+              "Name": "sls-shui-board-prod-HttpApiId"
+            }
+          },
+          "HttpApiUrl": {
+            "Description": "URL of the HTTP API",
+            "Value": {
+              "Fn::Join": [
+                "",
+                [
+                  "https://",
+                  {
+                    "Ref": "HttpApi"
+                  },
+                  ".execute-api.",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  ".",
+                  {
+                    "Ref": "AWS::URLSuffix"
+                  }
+                ]
+              ]
+            },
+            "Export": {
+              "Name": "sls-shui-board-prod-HttpApiUrl"
+            }
+          }
+        }
+      },
+      "vpc": {}
+    },
+    "dashboard": {
+      "isEnabledForService": false,
+      "requiredAuthentication": false,
+      "orgFeaturesInUse": null,
+      "orgObservabilityIntegrations": null,
+      "serviceAppId": null,
+      "serviceProvider": null,
+      "instanceParameters": null
+    },
+    "serviceRawFile": "service: shui-board\r\nframeworkVersion: \"4\"\r\n\r\nprovider:\r\n  name: aws\r\n  runtime: nodejs20.x\r\n  region: eu-north-1\r\n  environment:\r\n    TABLE_NAME: ${self:service}-messages-${sls:stage}\r\n  httpApi:\r\n    cors:\r\n      allowedOrigins:\r\n        - \"*\"\r\n      allowedHeaders:\r\n        - Content-Type\r\n      allowedMethods:\r\n        - OPTIONS\r\n        - GET\r\n        - POST\r\n        - PUT\r\n  iam:\r\n    role:\r\n      statements:\r\n        - Effect: Allow\r\n          Action:\r\n            - dynamodb:PutItem\r\n            - dynamodb:GetItem\r\n            - dynamodb:UpdateItem\r\n            - dynamodb:Scan\r\n          Resource:\r\n            - arn:aws:dynamodb:${aws:region}:${aws:accountId}:table/${self:provider.environment.TABLE_NAME}\r\n\r\nfunctions:\r\n  createMessage:\r\n    handler: src/createMessage.handler\r\n    events:\r\n      - httpApi:\r\n          path: /messages\r\n          method: post\r\n          cors:\r\n            allowedOrigins:\r\n              - \"*\"\r\n            allowedHeaders:\r\n              - Content-Type\r\n            allowedMethods:\r\n              - OPTIONS\r\n              - GET\r\n              - POST\r\n              - PUT\r\n\r\n  listMessages:\r\n    handler: src/listMessages.handler\r\n    events:\r\n      - httpApi:\r\n          path: /messages\r\n          method: get\r\n          cors:\r\n            allowedOrigins:\r\n              - \"*\"\r\n            allowedHeaders:\r\n              - Content-Type\r\n            allowedMethods:\r\n              - OPTIONS\r\n              - GET\r\n              - POST\r\n              - PUT\r\n\r\n  updateMessage:\r\n    handler: src/updateMessage.handler\r\n    events:\r\n      - httpApi:\r\n          path: /messages/{id}\r\n          method: put\r\n\r\nresources:\r\n  Resources:\r\n    MessagesTable:\r\n      Type: AWS::DynamoDB::Table\r\n      Properties:\r\n        TableName: ${self:provider.environment.TABLE_NAME}\r\n        BillingMode: PAY_PER_REQUEST\r\n        AttributeDefinitions:\r\n          - AttributeName: id\r\n            AttributeType: S\r\n        KeySchema:\r\n          - AttributeName: id\r\n            KeyType: HASH\r\n",
+    "command": [
+      "deploy"
+    ],
+    "options": {
+      "stage": "prod"
+    },
+    "orgId": "3fd9a6f6-13f1-43a4-a310-73874940c1cd",
+    "orgName": "folkunidennis",
+    "userId": "6gKs4rsv4DgJHhnHSD",
+    "userName": "folkunidennis",
+    "serviceProviderAwsAccountId": "365535501605",
+    "serviceProviderAwsCfStackName": "shui-board-prod",
+    "serviceProviderAwsCfStackId": "arn:aws:cloudformation:eu-north-1:365535501605:stack/shui-board-prod/b3a6f910-a216-11f0-81f4-0ed5d14abc97",
+    "serviceProviderAwsCfStackCreated": "2025-10-05T18:11:23.667Z",
+    "serviceProviderAwsCfStackUpdated": "2025-10-05T19:02:39.403Z",
+    "serviceProviderAwsCfStackStatus": "UPDATE_COMPLETE",
+    "serviceProviderAwsCfStackOutputs": [
+      {
+        "OutputKey": "ListMessagesLambdaFunctionQualifiedArn",
+        "OutputValue": "arn:aws:lambda:eu-north-1:365535501605:function:shui-board-prod-listMessages:3",
+        "Description": "Current Lambda function version",
+        "ExportName": "sls-shui-board-prod-ListMessagesLambdaFunctionQualifiedArn"
+      },
+      {
+        "OutputKey": "HttpApiId",
+        "OutputValue": "zk78t9c9lb",
+        "Description": "Id of the HTTP API",
+        "ExportName": "sls-shui-board-prod-HttpApiId"
+      },
+      {
+        "OutputKey": "CreateMessageLambdaFunctionQualifiedArn",
+        "OutputValue": "arn:aws:lambda:eu-north-1:365535501605:function:shui-board-prod-createMessage:3",
+        "Description": "Current Lambda function version",
+        "ExportName": "sls-shui-board-prod-CreateMessageLambdaFunctionQualifiedArn"
+      },
+      {
+        "OutputKey": "ServerlessDeploymentBucketName",
+        "OutputValue": "serverless-framework-deployments-eu-north-1-e110e666-da56",
+        "ExportName": "sls-shui-board-prod-ServerlessDeploymentBucketName"
+      },
+      {
+        "OutputKey": "HttpApiUrl",
+        "OutputValue": "https://zk78t9c9lb.execute-api.eu-north-1.amazonaws.com",
+        "Description": "URL of the HTTP API",
+        "ExportName": "sls-shui-board-prod-HttpApiUrl"
+      }
+    ],
+    "compiledCloudFormationTemplate": {
+      "AWSTemplateFormatVersion": "2010-09-09",
+      "Description": "The AWS CloudFormation template for this Serverless application",
+      "Resources": {
+        "CreateMessageLogGroup": {
+          "Type": "AWS::Logs::LogGroup",
+          "Properties": {
+            "LogGroupName": "/aws/lambda/shui-board-prod-createMessage"
+          }
+        },
+        "ListMessagesLogGroup": {
+          "Type": "AWS::Logs::LogGroup",
+          "Properties": {
+            "LogGroupName": "/aws/lambda/shui-board-prod-listMessages"
+          }
+        },
+        "UpdateMessageLogGroup": {
+          "Type": "AWS::Logs::LogGroup",
+          "Properties": {
+            "LogGroupName": "/aws/lambda/shui-board-prod-updateMessage"
+          }
+        },
+        "IamRoleLambdaExecution": {
+          "Type": "AWS::IAM::Role",
+          "Properties": {
+            "AssumeRolePolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Principal": {
+                    "Service": [
+                      "lambda.amazonaws.com"
+                    ]
+                  },
+                  "Action": [
+                    "sts:AssumeRole"
+                  ]
+                }
+              ]
+            },
+            "Policies": [
+              {
+                "PolicyName": {
+                  "Fn::Join": [
+                    "-",
+                    [
+                      "shui-board",
+                      "prod",
+                      "lambda"
+                    ]
+                  ]
+                },
+                "PolicyDocument": {
+                  "Version": "2012-10-17",
+                  "Statement": [
+                    {
+                      "Effect": "Allow",
+                      "Action": [
+                        "logs:CreateLogStream",
+                        "logs:CreateLogGroup",
+                        "logs:TagResource"
+                      ],
+                      "Resource": [
+                        {
+                          "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/shui-board-prod*:*"
+                        }
+                      ]
+                    },
+                    {
+                      "Effect": "Allow",
+                      "Action": [
+                        "logs:PutLogEvents"
+                      ],
+                      "Resource": [
+                        {
+                          "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/shui-board-prod*:*:*"
+                        }
+                      ]
+                    },
+                    {
+                      "Effect": "Allow",
+                      "Action": [
+                        "dynamodb:PutItem",
+                        "dynamodb:GetItem",
+                        "dynamodb:UpdateItem",
+                        "dynamodb:Scan"
+                      ],
+                      "Resource": "arn:aws:dynamodb:eu-north-1:365535501605:table/shui-board-messages-prod"
+                    }
+                  ]
+                }
+              }
+            ],
+            "Path": "/",
+            "RoleName": {
+              "Fn::Join": [
+                "-",
+                [
+                  "shui-board",
+                  "prod",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  "lambdaRole"
+                ]
+              ]
+            }
+          }
+        },
+        "CreateMessageLambdaFunction": {
+          "Type": "AWS::Lambda::Function",
+          "Properties": {
+            "Code": {
+              "S3Bucket": "serverless-framework-deployments-eu-north-1-e110e666-da56",
+              "S3Key": "serverless/shui-board/prod/1759692591083-2025-10-05T19:29:51.083Z/shui-board.zip"
+            },
+            "Handler": "src/createMessage.handler",
+            "Runtime": "nodejs20.x",
+            "FunctionName": "shui-board-prod-createMessage",
+            "MemorySize": 1024,
+            "Timeout": 6,
+            "Environment": {
+              "Variables": {
+                "TABLE_NAME": "shui-board-messages-prod"
+              }
+            },
+            "Role": {
+              "Fn::GetAtt": [
+                "IamRoleLambdaExecution",
+                "Arn"
+              ]
+            }
+          },
+          "DependsOn": [
+            "CreateMessageLogGroup"
+          ]
+        },
+        "ListMessagesLambdaFunction": {
+          "Type": "AWS::Lambda::Function",
+          "Properties": {
+            "Code": {
+              "S3Bucket": "serverless-framework-deployments-eu-north-1-e110e666-da56",
+              "S3Key": "serverless/shui-board/prod/1759692591083-2025-10-05T19:29:51.083Z/shui-board.zip"
+            },
+            "Handler": "src/listMessages.handler",
+            "Runtime": "nodejs20.x",
+            "FunctionName": "shui-board-prod-listMessages",
+            "MemorySize": 1024,
+            "Timeout": 6,
+            "Environment": {
+              "Variables": {
+                "TABLE_NAME": "shui-board-messages-prod"
+              }
+            },
+            "Role": {
+              "Fn::GetAtt": [
+                "IamRoleLambdaExecution",
+                "Arn"
+              ]
+            }
+          },
+          "DependsOn": [
+            "ListMessagesLogGroup"
+          ]
+        },
+        "UpdateMessageLambdaFunction": {
+          "Type": "AWS::Lambda::Function",
+          "Properties": {
+            "Code": {
+              "S3Bucket": "serverless-framework-deployments-eu-north-1-e110e666-da56",
+              "S3Key": "serverless/shui-board/prod/1759692591083-2025-10-05T19:29:51.083Z/shui-board.zip"
+            },
+            "Handler": "src/updateMessage.handler",
+            "Runtime": "nodejs20.x",
+            "FunctionName": "shui-board-prod-updateMessage",
+            "MemorySize": 1024,
+            "Timeout": 6,
+            "Environment": {
+              "Variables": {
+                "TABLE_NAME": "shui-board-messages-prod"
+              }
+            },
+            "Role": {
+              "Fn::GetAtt": [
+                "IamRoleLambdaExecution",
+                "Arn"
+              ]
+            }
+          },
+          "DependsOn": [
+            "UpdateMessageLogGroup"
+          ]
+        },
+        "CreateMessageLambdaVersionlwROWSaSIgeMkTU7lkBsiKtvQQheJQOHkd2BOtK84": {
+          "Type": "AWS::Lambda::Version",
+          "DeletionPolicy": "Retain",
+          "Properties": {
+            "FunctionName": {
+              "Ref": "CreateMessageLambdaFunction"
+            },
+            "CodeSha256": "mVYVNN+hqHe4CfX484xQRo/dmPmX+EquMJRd/JeSxPA="
+          }
+        },
+        "ListMessagesLambdaVersiontFJljo6iHEfA5KfEvoHmdIZO74essW9ebqk9XMLlBA": {
+          "Type": "AWS::Lambda::Version",
+          "DeletionPolicy": "Retain",
+          "Properties": {
+            "FunctionName": {
+              "Ref": "ListMessagesLambdaFunction"
+            },
+            "CodeSha256": "mVYVNN+hqHe4CfX484xQRo/dmPmX+EquMJRd/JeSxPA="
+          }
+        },
+        "UpdateMessageLambdaVersionfY22LkQ4Nei2lGFWMzTh0Qqr3hLeeZtkFiQmpPkvTmw": {
+          "Type": "AWS::Lambda::Version",
+          "DeletionPolicy": "Retain",
+          "Properties": {
+            "FunctionName": {
+              "Ref": "UpdateMessageLambdaFunction"
+            },
+            "CodeSha256": "mVYVNN+hqHe4CfX484xQRo/dmPmX+EquMJRd/JeSxPA="
+          }
+        },
+        "HttpApi": {
+          "Type": "AWS::ApiGatewayV2::Api",
+          "Properties": {
+            "Name": "prod-shui-board",
+            "ProtocolType": "HTTP",
+            "CorsConfiguration": {
+              "AllowHeaders": [
+                "Content-Type"
+              ],
+              "AllowMethods": [
+                "OPTIONS",
+                "GET",
+                "POST",
+                "PUT"
+              ],
+              "AllowOrigins": [
+                "*"
+              ]
+            }
+          }
+        },
+        "HttpApiStage": {
+          "Type": "AWS::ApiGatewayV2::Stage",
+          "Properties": {
+            "ApiId": {
+              "Ref": "HttpApi"
+            },
+            "StageName": "$default",
+            "AutoDeploy": true,
+            "DefaultRouteSettings": {
+              "DetailedMetricsEnabled": false
+            }
+          }
+        },
+        "CreateMessageLambdaPermissionHttpApi": {
+          "Type": "AWS::Lambda::Permission",
+          "Properties": {
+            "FunctionName": {
+              "Fn::GetAtt": [
+                "CreateMessageLambdaFunction",
+                "Arn"
+              ]
+            },
+            "Action": "lambda:InvokeFunction",
+            "Principal": "apigateway.amazonaws.com",
+            "SourceArn": {
+              "Fn::Join": [
+                "",
+                [
+                  "arn:",
+                  {
+                    "Ref": "AWS::Partition"
+                  },
+                  ":execute-api:",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  ":",
+                  {
+                    "Ref": "AWS::AccountId"
+                  },
+                  ":",
+                  {
+                    "Ref": "HttpApi"
+                  },
+                  "/*"
+                ]
+              ]
+            }
+          }
+        },
+        "HttpApiIntegrationCreateMessage": {
+          "Type": "AWS::ApiGatewayV2::Integration",
+          "Properties": {
+            "ApiId": {
+              "Ref": "HttpApi"
+            },
+            "IntegrationType": "AWS_PROXY",
+            "IntegrationUri": {
+              "Fn::GetAtt": [
+                "CreateMessageLambdaFunction",
+                "Arn"
+              ]
+            },
+            "PayloadFormatVersion": "2.0",
+            "TimeoutInMillis": 30000
+          }
+        },
+        "HttpApiRoutePostMessages": {
+          "Type": "AWS::ApiGatewayV2::Route",
+          "Properties": {
+            "ApiId": {
+              "Ref": "HttpApi"
+            },
+            "RouteKey": "POST /messages",
+            "Target": {
+              "Fn::Join": [
+                "/",
+                [
+                  "integrations",
+                  {
+                    "Ref": "HttpApiIntegrationCreateMessage"
+                  }
+                ]
+              ]
+            }
+          },
+          "DependsOn": "HttpApiIntegrationCreateMessage"
+        },
+        "ListMessagesLambdaPermissionHttpApi": {
+          "Type": "AWS::Lambda::Permission",
+          "Properties": {
+            "FunctionName": {
+              "Fn::GetAtt": [
+                "ListMessagesLambdaFunction",
+                "Arn"
+              ]
+            },
+            "Action": "lambda:InvokeFunction",
+            "Principal": "apigateway.amazonaws.com",
+            "SourceArn": {
+              "Fn::Join": [
+                "",
+                [
+                  "arn:",
+                  {
+                    "Ref": "AWS::Partition"
+                  },
+                  ":execute-api:",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  ":",
+                  {
+                    "Ref": "AWS::AccountId"
+                  },
+                  ":",
+                  {
+                    "Ref": "HttpApi"
+                  },
+                  "/*"
+                ]
+              ]
+            }
+          }
+        },
+        "HttpApiIntegrationListMessages": {
+          "Type": "AWS::ApiGatewayV2::Integration",
+          "Properties": {
+            "ApiId": {
+              "Ref": "HttpApi"
+            },
+            "IntegrationType": "AWS_PROXY",
+            "IntegrationUri": {
+              "Fn::GetAtt": [
+                "ListMessagesLambdaFunction",
+                "Arn"
+              ]
+            },
+            "PayloadFormatVersion": "2.0",
+            "TimeoutInMillis": 30000
+          }
+        },
+        "HttpApiRouteGetMessages": {
+          "Type": "AWS::ApiGatewayV2::Route",
+          "Properties": {
+            "ApiId": {
+              "Ref": "HttpApi"
+            },
+            "RouteKey": "GET /messages",
+            "Target": {
+              "Fn::Join": [
+                "/",
+                [
+                  "integrations",
+                  {
+                    "Ref": "HttpApiIntegrationListMessages"
+                  }
+                ]
+              ]
+            }
+          },
+          "DependsOn": "HttpApiIntegrationListMessages"
+        },
+        "UpdateMessageLambdaPermissionHttpApi": {
+          "Type": "AWS::Lambda::Permission",
+          "Properties": {
+            "FunctionName": {
+              "Fn::GetAtt": [
+                "UpdateMessageLambdaFunction",
+                "Arn"
+              ]
+            },
+            "Action": "lambda:InvokeFunction",
+            "Principal": "apigateway.amazonaws.com",
+            "SourceArn": {
+              "Fn::Join": [
+                "",
+                [
+                  "arn:",
+                  {
+                    "Ref": "AWS::Partition"
+                  },
+                  ":execute-api:",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  ":",
+                  {
+                    "Ref": "AWS::AccountId"
+                  },
+                  ":",
+                  {
+                    "Ref": "HttpApi"
+                  },
+                  "/*"
+                ]
+              ]
+            }
+          }
+        },
+        "HttpApiIntegrationUpdateMessage": {
+          "Type": "AWS::ApiGatewayV2::Integration",
+          "Properties": {
+            "ApiId": {
+              "Ref": "HttpApi"
+            },
+            "IntegrationType": "AWS_PROXY",
+            "IntegrationUri": {
+              "Fn::GetAtt": [
+                "UpdateMessageLambdaFunction",
+                "Arn"
+              ]
+            },
+            "PayloadFormatVersion": "2.0",
+            "TimeoutInMillis": 30000
+          }
+        },
+        "HttpApiRoutePutMessagesIdVar": {
+          "Type": "AWS::ApiGatewayV2::Route",
+          "Properties": {
+            "ApiId": {
+              "Ref": "HttpApi"
+            },
+            "RouteKey": "PUT /messages/{id}",
+            "Target": {
+              "Fn::Join": [
+                "/",
+                [
+                  "integrations",
+                  {
+                    "Ref": "HttpApiIntegrationUpdateMessage"
+                  }
+                ]
+              ]
+            }
+          },
+          "DependsOn": "HttpApiIntegrationUpdateMessage"
+        },
+        "MessagesTable": {
+          "Type": "AWS::DynamoDB::Table",
+          "Properties": {
+            "TableName": "shui-board-messages-prod",
+            "BillingMode": "PAY_PER_REQUEST",
+            "AttributeDefinitions": [
+              {
+                "AttributeName": "id",
+                "AttributeType": "S"
+              }
+            ],
+            "KeySchema": [
+              {
+                "AttributeName": "id",
+                "KeyType": "HASH"
+              }
+            ]
+          }
+        }
+      },
+      "Outputs": {
+        "ServerlessDeploymentBucketName": {
+          "Value": "serverless-framework-deployments-eu-north-1-e110e666-da56",
+          "Export": {
+            "Name": "sls-shui-board-prod-ServerlessDeploymentBucketName"
+          }
+        },
+        "CreateMessageLambdaFunctionQualifiedArn": {
+          "Description": "Current Lambda function version",
+          "Value": {
+            "Ref": "CreateMessageLambdaVersionlwROWSaSIgeMkTU7lkBsiKtvQQheJQOHkd2BOtK84"
+          },
+          "Export": {
+            "Name": "sls-shui-board-prod-CreateMessageLambdaFunctionQualifiedArn"
+          }
+        },
+        "ListMessagesLambdaFunctionQualifiedArn": {
+          "Description": "Current Lambda function version",
+          "Value": {
+            "Ref": "ListMessagesLambdaVersiontFJljo6iHEfA5KfEvoHmdIZO74essW9ebqk9XMLlBA"
+          },
+          "Export": {
+            "Name": "sls-shui-board-prod-ListMessagesLambdaFunctionQualifiedArn"
+          }
+        },
+        "UpdateMessageLambdaFunctionQualifiedArn": {
+          "Description": "Current Lambda function version",
+          "Value": {
+            "Ref": "UpdateMessageLambdaVersionfY22LkQ4Nei2lGFWMzTh0Qqr3hLeeZtkFiQmpPkvTmw"
+          },
+          "Export": {
+            "Name": "sls-shui-board-prod-UpdateMessageLambdaFunctionQualifiedArn"
+          }
+        },
+        "HttpApiId": {
+          "Description": "Id of the HTTP API",
+          "Value": {
+            "Ref": "HttpApi"
+          },
+          "Export": {
+            "Name": "sls-shui-board-prod-HttpApiId"
+          }
+        },
+        "HttpApiUrl": {
+          "Description": "URL of the HTTP API",
+          "Value": {
+            "Fn::Join": [
+              "",
+              [
+                "https://",
+                {
+                  "Ref": "HttpApi"
+                },
+                ".execute-api.",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ".",
+                {
+                  "Ref": "AWS::URLSuffix"
+                }
+              ]
+            ]
+          },
+          "Export": {
+            "Name": "sls-shui-board-prod-HttpApiUrl"
+          }
+        }
+      }
+    }
+  }
+}

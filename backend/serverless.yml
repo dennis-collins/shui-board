@@ -1,0 +1,87 @@
+service: shui-board
+frameworkVersion: "4"
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: eu-north-1
+  environment:
+    TABLE_NAME: ${self:service}-messages-${sls:stage}
+  httpApi:
+    cors:
+      allowedOrigins:
+        - "*"
+      allowedHeaders:
+        - Content-Type
+      allowedMethods:
+        - OPTIONS
+        - GET
+        - POST
+        - PUT
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - dynamodb:PutItem
+            - dynamodb:GetItem
+            - dynamodb:UpdateItem
+            - dynamodb:Scan
+          Resource:
+            - arn:aws:dynamodb:${aws:region}:${aws:accountId}:table/${self:provider.environment.TABLE_NAME}
+
+functions:
+  createMessage:
+    handler: src/createMessage.handler
+    events:
+      - httpApi:
+          path: /messages
+          method: post
+          cors:
+            allowedOrigins:
+              - "*"
+            allowedHeaders:
+              - Content-Type
+            allowedMethods:
+              - OPTIONS
+              - GET
+              - POST
+              - PUT
+
+  listMessages:
+    handler: src/listMessages.handler
+    events:
+      - httpApi:
+          path: /messages
+          method: get
+          cors:
+            allowedOrigins:
+              - "*"
+            allowedHeaders:
+              - Content-Type
+            allowedMethods:
+              - OPTIONS
+              - GET
+              - POST
+              - PUT
+
+  updateMessage:
+    handler: src/updateMessage.handler
+    events:
+      - httpApi:
+          path: /messages/{id}
+          method: put
+
+resources:
+  Resources:
+    MessagesTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:provider.environment.TABLE_NAME}
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
